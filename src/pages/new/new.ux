@@ -3,26 +3,28 @@
     <div>
         <div class="new_bg">
             <scroll class="scroll_box" scroll-y="true" bounces="true">
-                <image class="title" src="/common/new/title_url.png" style="left: 3px;top: 102px;"></image>
-                <image class="editbox" src="/common/new/editbox.png" style="left: 3px;top: 147px;"></image>
-                <a class="edit_text" style="left: 14.49px;top: 170px;" @click="show_the_fucking_input_method(1)">{{text_value_URL}}_</a>
+                <image class="title" src="/common/new/title_url.png" style="left: 40px;top: 32px;"></image>
+                <image class="editbox" src="/common/new/editbox.png" style="left: 13px;top: 84px;"></image>
+                <a class="edit_text" style="left: 40px;top: 101px;" @click="show_the_fucking_input_method(1)">{{text_value_URL}}_</a>
 
-                <image class="title" src="/common/new/title_detail.png" style="left: 3px;top: 300px;"></image>
-                <image class="editbox" src="/common/new/editbox.png" style="left: 3px;top: 345px;"></image>
-                <a class="edit_text" style="left: 14.49px;top: 368px;" @click="show_the_fucking_input_method(2)">{{text_value_Detail}}_</a>
+                <image class="title" src="/common/new/title_detail.png" style="left: 40px;top: 191px;"></image>
+                <image class="editbox" src="/common/new/editbox.png" style="left: 13px;top: 243px;"></image>
+                <a class="edit_text" style="left: 40px;top: 260px;" @click="show_the_fucking_input_method(2)">{{text_value_Detail}}_</a>
 
-                <image class="title" src="/common/new/title_name.png" style="left: 3px;top: 498px;"></image>
-                <image class="editbox" src="/common/new/editbox.png" style="left: 3px;top: 543px;"></image>
-                <a class="edit_text" style="left: 14.49px;top: 566px;" @click="show_the_fucking_input_method(3)">{{text_value_name}}_</a>
+                <image class="title" src="/common/new/title_name.png" style="left: 40px;top: 350px;"></image>
+                <image class="editbox" src="/common/new/editbox.png" style="left: 13px;top: 402px;"></image>
+                <a class="edit_text" style="left: 40px;top: 419px;" @click="show_the_fucking_input_method(3)">{{text_value_name}}_</a>
 
-                <image class="title" src="/common/new/title_intro.png" style="left: 3px;top: 696px;"></image>
-                <image class="editbox" src="/common/new/editbox.png" style="left: 3px;top: 741px;"></image>
-                <a class="edit_text" style="left: 14.49px;top: 764px;" @click="show_the_fucking_input_method(4)">{{text_value_intro}}_</a>
-                <image class="button_complete" src="/common/new/complete.png" style="left: 45px;top: 913px;" @click="save"></image>
+                <image class="title" src="/common/new/title_intro.png" style="left: 40px;top: 509px;"></image>
+                <image class="editbox" src="/common/new/editbox.png" style="left: 13px;top: 561px;"></image>
+                <a class="edit_text" style="left: 40px;top: 578px;" @click="show_the_fucking_input_method(4)">{{text_value_intro}}_</a>
+                <image class="button_complete" src="/common/new/complete.png" style="left: 165px;top: 700px;" @click="save"></image>
             </scroll>
             <image class="flow" src='/common/about/flow.png'></image>
             <image class="button_to_home" src="/common/new/back.png" @click="move_to_index"></image>
-            <input-method hide="{{input_method_hide}}" keyboardtype="{{Keyboard_Type}}" vibratemode="{{vibratemode}}" screentype="pill-shaped" @delete="onDelete" @complete="onComplete"></input-method>
+            <a class="new_time">{{ currentTime }}</a>
+            <a class="new_title">新建指令</a>
+            <input-method hide="{{input_method_hide}}" keyboardtype="{{Keyboard_Type}}" vibratemode="{{vibratemode}}" screentype="rect" @delete="onDelete" @complete="onComplete"></input-method>
             <image class="button_hide_input" src="/common/new/hide_input.png" show={{!input_method_hide}} @click="hide_the_fucking_input_method"></image>
         </div>
     </div>
@@ -156,19 +158,10 @@ export default {
 
   /* 存储数据 */
     save(){
-        if(this.text_value_URL === ""){
-            this.tanchuang("请输入请求URL");
+        if(this.text_value_URL === "" || this.text_value_Detail === "" || this.text_value_name === "" || this.text_value_intro === ""){
+            this.tanchuang("请务必输入完整内容");
+            return 0;
         }
-        if(this.text_value_Detail === ""){
-            this.tanchuang("请输入请求内容");
-        }
-        if(this.text_value_name === ""){
-            this.tanchuang("请输入请求名称");
-        }
-        if(this.text_value_intro === ""){
-            this.tanchuang("请输入请求简介");
-        }
-        
         var Target_JSON = {name: this.text_value_name, detail: this.text_value_Detail, url: this.text_value_URL, intro: this.text_value_intro};
         var target_text = JSON.stringify(Target_JSON);
         file.writeText({
@@ -212,8 +205,8 @@ export default {
     position: absolute;
     left: 0px;
     top: 0px;
-    width: 192px;
-    height: 490px;
+    width: 432px;
+    height: 514px;
     opacity: 1;
     background-color: rgba(0, 0, 0, 1);
 }
@@ -221,17 +214,53 @@ export default {
 /* 返回按钮 */
 .button_to_home{
     position: absolute;
-    left: 45px;
-    top: 6px;
-    width: 102px;
+    left: 40px;
+    top: 40px;
+    width: 72px;
     height: 72px;
     opacity: 1;
 }
 
+/* 时钟 */
+.new_time{
+    position: absolute;
+    left: 138px;
+    top: 40px;
+    width: 255px;
+    height: 34px;
+    opacity: 1;
+    /** 文本1 */
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: 0px;
+    line-height: 33.6px;
+    color: rgba(255, 255, 255, 0.6);
+    text-align: right;
+    vertical-align: top;
+}
+
+
+/* 页面标题 */
+.new_title{
+    position: absolute;
+    left: 138px;
+    top: 68px;
+    width: 255px;
+    height: 45px;
+    opacity: 1;
+    /** 文本1 */
+    font-size: 32px;
+    font-weight: 500;
+    letter-spacing: 0px;
+    line-height: 44.8px;
+    color: rgba(255, 255, 255, 1);
+    text-align: right;
+    vertical-align: top;
+}
 
 .scroll_box{
     position: absolute;
-    top: 0px; /* 距离屏幕顶部40px */
+    top: 100px; /* 距离屏幕顶部40px */
     bottom: 0px; /* 底部对齐屏幕底端 */
     width: 100%;
     overflow-y: scroll; /* 确保内容可滚动 */
@@ -240,8 +269,8 @@ export default {
     position: absolute;
     left: 0px;
     top: 0px;
-    width: 192px;
-    height: 102px;
+    width: 432px;
+    height: 206px;
     opacity: 1;
 }
 
@@ -249,7 +278,7 @@ export default {
 /* title */
 .title{
     position: absolute;
-    width: 186px;
+    width: 195px;
     height: 45px;
     opacity: 1;
 }
@@ -257,15 +286,15 @@ export default {
 
 .editbox{
     position: absolute;
-    width: 186px;
-    height: 147px;
+    width: 406px;
+    height: 100px;
     opacity: 1;
 }
 
 .edit_text{
     position: absolute;
-    width: 154px;
-    height: 102px;
+    width: 352px;
+    height: 66px;
     opacity: 1;
     /** 文本 */
     font-size: 24px;
@@ -286,9 +315,9 @@ export default {
 
 .button_hide_input{
     position: absolute;
-    left: 45px;
-    top: 105px;
-    width: 102px;
+    left: 329px;
+    top: 176px;
+    width: 72px;
     height: 72px;
     opacity: 1;
 }

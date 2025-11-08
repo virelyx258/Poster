@@ -1,14 +1,14 @@
 <template>
   <div>
     <div class="home_bg">
-      <list
+      <list if="{{List.length != 0}}"
         class="list"
         bounces="true"
         onscroll="onScroll"
         onscrolltop="onScrollTop"
         onscrollbottom="onScrollBottom"
         onscrolltouchup="onScrollTouchup"
-        style="top: 84px; left: 0px; height: 328px"
+        style="top: 132px; left: 14px; height: 382px"
       >
         <list-item for="{{ List }}" class="list_card_bg" type="item" onclick="send_post($item)">
           <a class="list_card_title" onclick="send_post($item)">{{ $item.name }}</a>
@@ -16,6 +16,8 @@
         </list-item>
       </list>
       <image class="flow" src="/common/about/flow.png"></image>
+      <a class="home_time">{{ currentTime }}</a>
+      <a class="home_title">指令列表</a>
       <image
         class="home_button_settings"
         src="/common/home/button_settings.png"
@@ -79,6 +81,12 @@
   },
   onInit() {
     console.log("Index page initialized")
+    // 初始化时获取时间
+    this.updateTime()
+    // 设置定时器，每秒更新一次时间
+    this.timeInterval = setInterval(() => {
+      this.updateTime()
+    }, 1000)
     this.LoadList()
   },
   onReady() {
@@ -89,6 +97,10 @@
   },
   onDestroy() {
     console.log("Index page destroyed")
+    // 组件销毁时清除定时器
+    if (this.timeInterval) {
+      clearInterval(this.timeInterval)
+    }
   },
   onBackPress() {
     this.$app.exit()
@@ -167,44 +179,79 @@
   position: absolute;
   left: 0px;
   top: 0px;
-  width: 192px;
-  height: 490px;
+  width: 432px;
+  height: 514px;
   opacity: 1;
   background-color: #000000ff;
+}
+/* 首页 时钟 */
+.home_time {
+  position: absolute;
+  left: 40px;
+  top: 40px;
+  width: 176px;
+  height: 34px;
+  opacity: 1;
+  /** 文本 */
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 0px;
+  line-height: 33.6px;
+  color: #999999;
+  text-align: left;
+  vertical-align: top;
+}
+
+/* 首页 标题 */
+.home_title {
+  position: absolute;
+  left: 40px;
+  top: 67px;
+  width: 177px;
+  height: 45px;
+  opacity: 1;
+  /** 文本 */
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: 0px;
+  line-height: 44.8px;
+  color: #ffffff;
+  text-align: left;
+  vertical-align: top;
 }
 
 /* 首页按钮 */
 .home_button_settings {
   position: absolute;
-  left: 45px;
-  top: 6px;
-  width: 102px;
+  left: 320px;
+  top: 40px;
+  width: 72px;
   height: 72px;
   opacity: 1;
 }
 
 .home_button_new {
   position: absolute;
-  left: 45px;
-  top: 412px;
-  width: 102px;
+  left: 320px;
+  top: 402px;
+  width: 72px;
   height: 72px;
   opacity: 1;
 }
 /* 修复 background 属性验证失败问题 */
 .list_card_bg {
-  width: 192px;
-  height: 110px;
-  padding: 12px 12px;
-  margin-bottom: 6px;
+  width: 406px;
+  height: 112px;
+  padding: 13px 27px;
+  margin-bottom: 8px;
   border-radius: 36px;
   background-color: #333333;
   flex-direction: column;
   justify-content: space-between;
 }
 .list_card_title {
-  font-size: 32px;
-  line-height: 44.8px;
+  font-size: 35px;
+  line-height: 40px;
   width: 100%;
   font-weight: bold;
   color: white;
@@ -215,8 +262,8 @@
   /* padding-top:12px; */
 }
 .list_card_intro {
-  font-size: 28px;
-  line-height: 39.2px;
+  font-size: 30px;
+  line-height: 36px;
   width: 100%;
   font-weight: bold;
   color: #a8a8a8;
@@ -228,8 +275,8 @@
   position: absolute;
   left: 0px;
   top: 0px;
-  width: 192px;
-  height: 102px;
+  width: 432px;
+  height: 206px;
   opacity: 1;
 }
 </style>

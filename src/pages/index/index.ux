@@ -1,0 +1,282 @@
+<template>
+  <div>
+    <div class="home_bg">
+      <list
+        class="list"
+        bounces="true"
+        onscroll="onScroll"
+        onscrolltop="onScrollTop"
+        onscrollbottom="onScrollBottom"
+        onscrolltouchup="onScrollTouchup"
+        style="top: 86px; left: 6px; height: 394px"
+      >
+        <list-item for="{{ List }}" class="list_card_bg" type="item" onclick="send_post($item)">
+          <a class="list_card_title" onclick="send_post($item)">{{ $item.name }}</a>
+          <a class="list_card_intro" onclick="send_post($item)">{{ $item.intro }}</a>
+        </list-item>
+      </list>
+      <image class="flow" src="/common/about/flow.png"></image>
+      <a class="home_time">{{ currentTime }}</a>
+      <a class="home_title">指令列表</a>
+      <image
+        class="home_button_settings"
+        src="/common/home/button_settings.png"
+        @click="move_to_settings"
+      ></image>
+      <image class="home_button_new" src="/common/home/button_new.png" @click="move_to_new"></image>
+    </div>
+  </div>
+</template>
+
+<script>
+  import router from "@system.router"
+  import file from "@system.file"
+  import prompt from "@system.prompt"
+  import fetch from '@system.fetch'
+  export default {
+  private: {
+    currentTime: "", // 当前时间变量
+    timeInterval: null, // 定时器变量
+    List: [{}] // 列表数据
+  },
+
+  LoadList() {
+    file.readText({
+      uri: "internal://files/poster/data.virelyx",
+      success: (data) => {
+        try {
+          // 修复连续JSON对象格式
+          const fixedText = data.text
+            .replace(/\s+/g, "") // 移除所有空白字符（可选）
+            .replace(/}\s*{/g, "},{")
+
+          // 构造有效JSON数组并解析
+          this.List = JSON.parse(`[${fixedText}]`)
+
+          console.log("解析成功，共获取项目:", this.List.length)
+        } catch (error) {
+          console.error("JSON解析失败:", error, "原始内容:", data.text)
+
+          // 备用方案：尝试逐对象解析
+          const objects = []
+          const regex = /{.*?}/g
+          let match
+
+          while ((match = regex.exec(data.text)) !== null) {
+            try {
+              objects.push(JSON.parse(match[0]))
+            } catch (e) {
+              console.warn("解析单个对象失败:", match[0])
+            }
+          }
+          this.List = objects.length > 0 ? objects : []
+        }
+        console.log("text: " + data.text)
+      },
+      fail: (data, code) => {
+        this.List = []
+        console.log(`handling fail, code = ${code}`)
+      }
+    })
+  },
+  onInit() {
+    console.log("Index page initialized")
+    // 初始化时获取时间
+    this.updateTime()
+    // 设置定时器，每秒更新一次时间
+    this.timeInterval = setInterval(() => {
+      this.updateTime()
+    }, 1000)
+    this.LoadList()
+  },
+  onReady() {
+    console.log("Index page ready")
+  },
+  onShow() {
+    console.log("Index page shown")
+  },
+  onDestroy() {
+    console.log("Index page destroyed")
+    // 组件销毁时清除定时器
+    if (this.timeInterval) {
+      clearInterval(this.timeInterval)
+    }
+  },
+  onBackPress() {
+    this.$app.exit()
+  },
+  move_to_settings() {
+    router.push({
+      uri: "/pages/settings"
+    })
+  },
+  move_to_new() {
+    router.push({
+      uri: "/pages/new"
+    })
+  },
+  updateTime() {
+    const now = new Date()
+    const hours = now.getHours().toString().padStart(2, "0")
+    const minutes = now.getMinutes().toString().padStart(2, "0")
+    this.currentTime = `${hours}:${minutes}`
+  },
+
+  onScroll(e) {
+    console.log("### list onScroll evt: ", e)
+  },
+  onScrollTop(e) {
+    console.log("### list onScrollTop evt: ", e)
+  },
+  onScrollBottom(e) {
+    console.log("### list onScrollBottom evt: ", e)
+  },
+  onScrollTouchup(e) {
+    console.log("### list onScrollTouchup evt: ", e)
+  },
+  tanchuang(message_info) {
+    prompt.showToast({
+      message: message_info,
+      duration: 2000
+    })
+  },
+  send_post(item) {
+      console.log("项目名称:", item.name);
+      console.log("URL地址:", item.url);
+      console.log("详细信息:", item.detail);
+      fetch.fetch({
+        url: item.url,
+        responseType: 'text',
+        data: item.detail,
+        method: 'POST',
+        success: (response) => {
+            prompt.showDialog({
+              title: '请求成功',
+              message: `代码.： ${response.code}\n返回数据： ${response.data}`,
+              buttons: [{ text: "确定" }]
+            });
+            console.log(`the status code of the response: ${response.code}`);
+            console.log(`the data of the response: ${response.data}`);
+            console.log(`the headers of the response: ${JSON.stringify(response.headers)}`);
+        },
+        fail: (data, code) => {
+          prompt.showDialog({
+            title: '请求失败',
+            message: `错误信息： ${data}\n错误代码： ${code}`,
+            buttons: [{ text: "确定" }]
+          });
+          console.log(`handling fail, errMsg = ${data}`);
+          console.log(`handling fail, errCode = ${code}`);
+        }
+      })
+  }
+} 
+</script>
+
+<style>
+/* 首页底板 */
+.home_bg {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 336px;
+  height: 480px;
+  opacity: 1;
+  background-color: #000000ff;
+}
+/* 首页 时钟 */
+.home_time {
+  position: absolute;
+  left: 77px;
+  top: 7px;
+  width: 182px;
+  height: 32px;
+  opacity: 1;
+  /** 文本 */
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 0px;
+  line-height: 33.6px;
+  color: #999999;
+  text-align: center;
+  vertical-align: top;
+}
+
+/* 首页 标题 */
+.home_title {
+  position: absolute;
+  left: 77px;
+  top: 35px;
+  width: 182px;
+  height: 42px;
+  opacity: 1;
+  /** 文本 */
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: 0px;
+  line-height: 44.8px;
+  color: #ffffff;
+  text-align: center;
+  vertical-align: top;
+}
+
+/* 首页按钮 */
+.home_button_settings {
+  position: absolute;
+  left: 258px;
+  top: 6px;
+  width: 72px;
+  height: 72px;
+  opacity: 1;
+}
+
+.home_button_new {
+  position: absolute;
+  left: 258px;
+  top: 402px;
+  width: 72px;
+  height: 72px;
+  opacity: 1;
+}
+/* 修复 background 属性验证失败问题 */
+.list_card_bg {
+  width: 324px;
+  height: 112px;
+  padding: 14px 19px;
+  margin-bottom: 8.8px;
+  border-radius: 36px;
+  background-color: #333333;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.list_card_title {
+  font-size: 32px;
+  line-height: 44.8px;
+  width: 100%;
+  font-weight: bold;
+  color: white;
+  text-overflow: ellipsis;
+  lines: 1;
+  /* padding-left:12px; */
+  /* padding-right:12px; */
+  /* padding-top:12px; */
+}
+.list_card_intro {
+  font-size: 28px;
+  line-height: 39.2px;
+  width: 100%;
+  font-weight: bold;
+  color: #a8a8a8;
+  text-overflow: ellipsis;
+  lines: 1;
+  /* padding-right:12px; */
+}
+.flow {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 336px;
+  height: 102px;
+  opacity: 1;
+}
+</style>

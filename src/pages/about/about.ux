@@ -1,0 +1,172 @@
+<template>
+  <div>
+    <div class="about_bg">
+      <scroll class="scroll_box" scroll-y="true" bounces="true">
+        <image class="about_card" src="/common/about/version_card.png"></image>
+        <image class="creator" src="/common/about/creator.png"></image>
+        <image class="contact" src="/common/about/contact.png"></image>
+        <image class="avatar" src="/common/about/avatar.png"></image>
+        <image class="thankyou" src="/common/about/thankyou.png"></image>
+        <image class="mzsm" src="/common/about/mzsm.png"></image>
+        <image class="thank_them" src="/common/about/thank_them.png"></image>
+      </scroll>
+      <image class="flow" src="/common/about/flow.png"></image>
+      <image
+        class="about_button_settings"
+        src="/common/settings/button_back.png"
+        @click="move_to_settings"
+      ></image>
+      <a class="about_time">{{ currentTime }}</a>
+      <a class="about_title">关于</a>
+    </div>
+  </div>
+</template>
+
+<script>
+import router from '@system.router'
+export default {
+    private: {
+        currentTime: "", // 当前时间变量
+        timeInterval: null // 定时器变量
+    },
+    onInit() {
+        console.log("About page initialized");
+        // 初始化时获取时间
+        this.updateTime();
+        // 设置定时器，每秒更新一次时间
+        this.timeInterval = setInterval(() => {
+            this.updateTime();
+        }, 1000);
+    },
+    onDestroy() {
+        console.log("About page destroyed");
+        // 组件销毁时清除定时器
+        if (this.timeInterval) {
+            clearInterval(this.timeInterval);
+        }
+    },
+    move_to_settings() {
+        router.push({
+        uri: '/pages/settings'
+        });
+    },
+    updateTime() {
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        this.currentTime = `${hours}:${minutes}`;
+    },
+    onBackPress () {
+        this.move_to_settings()
+        return true;
+    }
+};
+</script>
+
+<style>
+.scroll-container {
+  width: 100%;
+}
+.scroll_box {
+  position: absolute;
+  top: 0px; /* 距离屏幕顶部40px */
+  bottom: 0; /* 底部对齐屏幕底端 */
+  width: 100%;
+  overflow-y: scroll; /* 确保内容可滚动 */
+}
+
+.about_bg {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 192px;
+  height: 490px;
+  opacity: 1;
+  background-color: #000000ff;
+}
+
+
+/* 关于按钮 */
+.about_button_settings {
+  position: absolute;
+  left: 40px;
+  top: 40px;
+  width: 72px;
+  height: 72px;
+  opacity: 1;
+}
+
+/* 关于 版本卡片 */
+.about_card {
+  position: absolute;
+  left: 14px;
+  top: 20px;
+  width: 406px;
+  height: 194px;
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 1);
+}
+
+/* 关于 创作者*/
+.creator {
+  position: absolute;
+  left: 40px;
+  top: 227px;
+  width: 226px;
+  height: 187px;
+  opacity: 1;
+}
+
+/* 联系方式 */
+.contact {
+  position: absolute;
+  left: 40px;
+  top: 441px;
+  width: 346px;
+  height: 142px;
+  opacity: 1;
+}
+
+.avatar {
+  position: absolute;
+  left: 162px;
+  top: 610px;
+  width: 108px;
+  height: 108px;
+  opacity: 1;
+}
+
+.thankyou {
+  position: absolute;
+  left: 85px;
+  top: 735px;
+  width: 262px;
+  height: 90px;
+  opacity: 1;
+}
+
+.mzsm{
+  position: absolute;
+  left: 27px;
+  top: 852px;
+  width: 376px;
+  height: 316px;
+  opacity: 1;
+}
+.thank_them {
+  position: absolute;
+  left: 27px;
+  top: 1195px;
+  width: 376px;
+  height: 135px;
+  opacity: 1;
+}
+.flow {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 432px;
+  height: 206px;
+  opacity: 1;
+}
+</style>

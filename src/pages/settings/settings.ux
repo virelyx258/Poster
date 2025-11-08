@@ -1,0 +1,153 @@
+<template>
+    <div>
+         <div class="settings_bg">
+            <image class="settings_button_index" src="/common/settings/button_back.png" @click="move_to_index"></image>
+            <image class="settings_card" style="top:84px" src="/common/settings/card_1.png" @click="clear_data"></image>
+            <a class="settings_card_title" style="top:96px" @click="clear_data">清除数据</a>
+            <a class="settings_card_intro" style="top:145px" @click="clear_data">清空指令</a>
+            <image class="settings_card" style="top:200px" src="/common/settings/card_1.png" @click="move_to_about"></image>
+            <a class="settings_card_title" style="top:212px" @click="move_to_about">关于</a>
+            <a class="settings_card_intro" style="top:261px" @click="move_to_about">关于软件</a>
+        </div>
+    </div>
+</template>
+
+<script>
+import router from '@system.router';
+import file from '@system.file';
+import prompt from '@system.prompt';
+export default {
+    private: {
+        currentTime: "", // 当前时间变量
+        timeInterval: null // 定时器变量
+    },
+    onInit() {
+        console.log("Settings page initialized");
+        // 初始化时获取时间
+        this.updateTime();
+        // 设置定时器，每秒更新一次时间
+        this.timeInterval = setInterval(() => {
+            this.updateTime();
+        }, 1000);
+        // 加载列表
+        LoadList()
+    },
+    onReady() {
+        console.log("Settings page ready");
+    },
+    onShow() {
+        console.log("Settings page shown");
+    },
+    onDestroy() {
+        console.log("Settings page destroyed");
+        // 组件销毁时清除定时器
+        if (this.timeInterval) {
+            clearInterval(this.timeInterval);
+        }
+    },
+    onBackPress () {
+        this.move_to_index()
+        return true;
+    },
+    move_to_index() {
+        router.push({
+            uri: '/pages/index'
+        });
+    },
+    move_to_about() {
+        router.push({
+            uri: '/pages/about'
+        });
+    },
+    updateTime() {
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        this.currentTime = `${hours}:${minutes}`;
+    },
+    clear_data(){
+        file.delete({
+            uri: 'internal://files/poster/data.virelyx',
+            success: (data) => {
+                this.tanchuang("清除完毕，请重启软件");
+                console.log('handling success')
+            },
+            fail: (data, code) => {
+                this.tanchuang(`清除失败，错误代码$code`);
+                console.log(`handling fail, code = ${code}`)
+            }
+        })
+    },
+    tanchuang(message_info){
+        prompt.showToast({
+            message: message_info,
+            duration: 2000
+        })
+    },
+
+};
+</script>
+
+<style>
+.settings_bg{
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 192px;
+    height: 490px;
+    opacity: 1;
+    background-color: #000000FF;
+}
+/* 设置按钮 */
+.settings_button_index{
+    position: absolute;
+    left: 45px;
+    top: 6px;
+    width: 102px;
+    height: 72px;
+    opacity: 1;
+}
+
+/* 设置卡片 1 */
+.settings_card{
+    position: absolute;
+    left: 0px;
+    width: 192px;
+    height: 110px;
+    opacity: 1;
+}
+
+/* 设置卡片标题 1 */
+.settings_card_title{
+    position: absolute;
+    left: 11px;
+    width: 160px;
+    height: 45px;
+    opacity: 1;
+    /** 文本1 */
+    font-size: 32px;
+    font-weight: 500;
+    letter-spacing: 0px;
+    line-height: 44.8px;
+    color: rgba(255, 255, 255, 1);
+    text-align: left;
+    vertical-align: top;
+}
+
+/* 设置卡片简介 1 */
+.settings_card_intro{
+    position: absolute;
+    left: 11px;
+    width: 169px;
+    height: 40px;
+    opacity: 1;
+    /** 文本1 */
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: 0px;
+    line-height: 39.2px;
+    color: rgba(255, 255, 255, 0.6);
+    text-align: left;
+    vertical-align: top;
+}
+</style>
